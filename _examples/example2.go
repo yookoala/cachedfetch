@@ -1,13 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/yookoala/cachedfetcher"
 	"log"
 )
 
-func example2(host string) (err error) {
+func example2(host string, db *sql.DB) (err error) {
 	url := host + "/example/2"
-	resp, err := cachedfetcher.Get(url)
+	f := cachedfetcher.New(db).ContextStr("example/2")
+	resp, err := f.Get(url)
 	if err != nil {
 		return
 	}

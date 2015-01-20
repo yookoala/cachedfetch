@@ -1,8 +1,10 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -26,10 +28,16 @@ func main() {
 	ts := httptest.NewServer(mux)
 	defer ts.Close()
 
+	// open database for test
+	db, err := sql.Open("sqlite3", *dbfile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// run examples with test server
 	log.Printf("----")
-	example1(ts.URL)
+	example1(ts.URL, db)
 	log.Printf("----")
-	example2(ts.URL)
+	example2(ts.URL, db)
 	log.Printf("----")
 }
