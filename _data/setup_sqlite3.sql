@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `cachedfetch_cache` (
 	`status`            TEXT DEFAULT '',
 	`status_code`       INT(5) DEFAULT 200,
 	`proto`             TEXT DEFAULT '',
+	`content_length`    INT(11) DEFAULT 0,
 	`transfer_encoding` TEXT DEFAULT '',
 	`header`            TEXT DEFAULT '',
 	`trailer`           TEXT DEFAULT '',

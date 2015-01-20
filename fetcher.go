@@ -2,6 +2,7 @@ package cachedfetcher
 
 import (
 	"net/http"
+	"time"
 )
 
 func New(c Cache) *Fetcher {
@@ -15,6 +16,28 @@ type Fetcher struct {
 }
 
 // actually fetch the url with GET method
-func (f *Fetcher) Get(url string) (r *http.Response, err error) {
-	return http.Get(url)
+func (f *Fetcher) Get(url string, ctx Context) (r *Response, err error) {
+
+	// obtain raw response
+	ctx.Fetched = time.Now()
+	resp, err := http.Get(url)
+	if err != nil {
+		return
+	}
+
+	// render cachedfetcher response
+	r = &Response{
+		URL:         url,
+		Context:     ctx.Str,
+		ContextTime: ctx.Time,
+		Fetched:     ctx.Fetched,
+	}
+	err = r.ReadRaw(resp)
+	if err != nil {
+		return
+	}
+
+	// add to cache
+	err = f.Cache.Add(url, ctx, r)
+	return
 }

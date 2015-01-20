@@ -5,6 +5,7 @@ import (
 )
 
 type Context struct {
-	Str  string
-	Time time.Time
+	Str     string
+	Time    time.Time
+	Fetched time.Time
 }

@@ -36,8 +36,14 @@ func main() {
 
 	// run examples with test server
 	log.Printf("----")
-	example1(ts.URL, db)
+	err = example1(ts.URL, db)
+	if err != nil {
+		log.Printf("%s", err)
+	}
 	log.Printf("----")
-	example2(ts.URL, db)
+	err = example2(ts.URL, db)
+	if err != nil {
+		log.Printf("%s", err)
+	}
 	log.Printf("----")
 }

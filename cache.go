@@ -2,11 +2,10 @@ package cachedfetcher
 
 import (
 	"database/sql"
-	"net/http"
 )
 
 type Cache interface {
-	Add(url string, ctx Context, resp *http.Response) (err error)
+	Add(url string, ctx Context, r *Response) (err error)
 }
 
 func NewSqlCache(db *sql.DB) *SqlCache {
@@ -19,7 +18,7 @@ type SqlCache struct {
 	DB *sql.DB
 }
 
-func (c *SqlCache) Add(url string, ctx Context,
-	resp *http.Response) (err error) {
+func (c *SqlCache) Add(url string, ctx Context, r *Response) (err error) {
+	// TODO: store the response into database
 	return
 }

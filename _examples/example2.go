@@ -4,31 +4,27 @@ import (
 	"database/sql"
 	"github.com/yookoala/cachedfetcher"
 	"log"
+	"time"
 )
 
 func example2(host string, db *sql.DB) (err error) {
 	url := host + "/example/2"
 	c := cachedfetcher.NewSqlCache(db)
 	f := cachedfetcher.New(c)
-	resp, err := f.Get(url)
-	if err != nil {
-		return
+	ctx := cachedfetcher.Context{
+		Str:  "example/1",
+		Time: time.Now(),
 	}
-	defer resp.Body.Close()
-
-	// read to byte according to size
-	var b []byte
-	b = make([]byte, resp.ContentLength)
-	size, err := resp.Body.Read(b)
+	resp, err := f.Get(url, ctx)
 	if err != nil {
 		return
 	}
 
 	// log response
 	log.Printf("Host:   %s", host)
-	log.Printf("URL:    %s", url)
+	log.Printf("URL:    %s", resp.URL)
 	log.Printf("Status: %s", resp.Status)
-	log.Printf("Size:   %d", size)
-	log.Printf("Body:   \"%s\"", string(b))
+	log.Printf("Size:   %d", resp.ContentLength)
+	log.Printf("Body:   \"%s\"", string(resp.Body))
 	return
 }
