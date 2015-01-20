@@ -2,7 +2,6 @@ package cachedfetcher
 
 import (
 	"net/http"
-	"time"
 )
 
 func New(c Cache) *Fetcher {
@@ -12,20 +11,7 @@ func New(c Cache) *Fetcher {
 }
 
 type Fetcher struct {
-	Cache   Cache
-	Context Context
-}
-
-// set default context string
-func (f *Fetcher) ContextStr(ctxStr string) *Fetcher {
-	f.Context.Str = ctxStr
-	return f
-}
-
-// set default context time
-func (f *Fetcher) ContextTime(ctxTime time.Time) *Fetcher {
-	f.Context.Time = ctxTime
-	return f
+	Cache Cache
 }
 
 // actually fetch the url with GET method

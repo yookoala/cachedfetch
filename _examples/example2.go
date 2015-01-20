@@ -9,7 +9,7 @@ import (
 func example2(host string, db *sql.DB) (err error) {
 	url := host + "/example/2"
 	c := cachedfetcher.NewSqlCache(db)
-	f := cachedfetcher.New(c).ContextStr("example/2")
+	f := cachedfetcher.New(c)
 	resp, err := f.Get(url)
 	if err != nil {
 		return
