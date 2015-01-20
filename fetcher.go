@@ -1,19 +1,18 @@
 package cachedfetcher
 
 import (
-	"database/sql"
 	"net/http"
 	"time"
 )
 
-func New(db *sql.DB) *Fetcher {
+func New(c Cache) *Fetcher {
 	return &Fetcher{
-		DB: db,
+		Cache: c,
 	}
 }
 
 type Fetcher struct {
-	DB      *sql.DB
+	Cache   Cache
 	Context Context
 }
 
