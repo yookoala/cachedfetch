@@ -30,6 +30,23 @@ type Response struct {
 	Body []byte
 }
 
+func (r *Response) Equals(r2 Response) bool {
+	return r.URL == r2.URL &&
+		r.ContextStr == r2.ContextStr &&
+		r.ContextTime.Unix() == r2.ContextTime.Unix() &&
+		r.FetchedTime.Unix() == r2.FetchedTime.Unix() &&
+		r.Status == r2.Status &&
+		r.StatusCode == r2.StatusCode &&
+		r.Proto == r2.Proto &&
+		r.ContentLength == r2.ContentLength &&
+		string(r.TransferEncodingJson) == string(r2.TransferEncodingJson) &&
+		string(r.HeaderJson) == string(r2.HeaderJson) &&
+		string(r.TrailerJson) == string(r2.TrailerJson) &&
+		string(r.RequestJson) == string(r2.RequestJson) &&
+		string(r.TlsJson) == string(r2.TlsJson) &&
+		string(r.Body) == string(r2.Body)
+}
+
 func (r *Response) ReadRaw(raw *http.Response) (err error) {
 
 	// read basic information
