@@ -28,9 +28,9 @@ func (f *Fetcher) Get(url string, ctx Context) (r *Response, err error) {
 	// render cachedfetcher response
 	r = &Response{
 		URL:         url,
-		Context:     ctx.Str,
+		ContextStr:  ctx.Str,
 		ContextTime: ctx.Time,
-		Fetched:     ctx.Fetched,
+		FetchedTime: ctx.Fetched,
 	}
 	err = r.ReadRaw(resp)
 	if err != nil {

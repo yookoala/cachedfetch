@@ -20,7 +20,7 @@ type SqlCache struct {
 
 func (c *SqlCache) Add(url string, ctx Context, r *Response) (err error) {
 	stmt, err := c.DB.Prepare("INSERT INTO `cachedfetch_cache` " +
-		"(`url`, `context`, `context_time`, `fetched`, " +
+		"(`url`, `context_str`, `context_time`, `fetched_time`, " +
 		"`status`, `status_code`, `proto`, `content_length`, " +
 		"`transfer_encoding`, `header`, `trailer`, `request`, `body`)" +
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
@@ -30,9 +30,9 @@ func (c *SqlCache) Add(url string, ctx Context, r *Response) (err error) {
 
 	_, err = stmt.Exec(
 		r.URL,
-		r.Context,
+		r.ContextStr,
 		r.ContextTime.Unix(),
-		r.Fetched.Unix(),
+		r.FetchedTime.Unix(),
 		r.Status,
 		r.StatusCode,
 		r.Proto,

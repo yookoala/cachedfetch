@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS `cachedfetch_cache` (
 	-- context and fetch information
 	--
 	`url`               VARCHAR(255) DEFAULT '',
-	`context`           VARCHAR(255) DEFAULT '',
+	`context_str`       VARCHAR(255) DEFAULT '',
 	`context_time`      INT(11) DEFAULT 0,
-	`fetched`           INT(11) DEFAULT 0,
+	`fetched_time`      INT(11) DEFAULT 0,
 
 	--
 	-- response meta information
@@ -31,12 +31,13 @@ CREATE TABLE IF NOT EXISTS `cachedfetch_cache` (
 	--
 	`body`              BLOB,
 
-	PRIMARY KEY (`url`, `context`, `context_time`)
+	PRIMARY KEY (`url`, `context_str`, `context_time`)
 );
 
 --
 -- Add extra index
 --
 CREATE INDEX `url` ON `cachedfetch_cache`(`url`);
-CREATE INDEX `context` ON `cachedfetch_cache`(`context`);
+CREATE INDEX `context`  ON `cachedfetch_cache`(`context_str`, `context_time`);
+CREATE INDEX `context_str`  ON `cachedfetch_cache`(`context_str`);
 CREATE INDEX `context_time` ON `cachedfetch_cache`(`context_time`);

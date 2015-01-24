@@ -11,9 +11,9 @@ type Response struct {
 
 	// context and fetch information
 	URL         string
-	Context     string
+	ContextStr  string
 	ContextTime time.Time
-	Fetched     time.Time
+	FetchedTime time.Time
 
 	// response meta information
 	Status               string
