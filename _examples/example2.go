@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-func example2(host string, db *sql.DB) (err error) {
+func example2(host string, db *sql.DB) (resp *cachedfetcher.Response, err error) {
 	url := host + "/example/2"
 	c := cachedfetcher.NewSqlCache(db)
 	f := cachedfetcher.New(c)
 	ctx := cachedfetcher.Context{
-		Str:  "example/1",
+		Str:  "example/2",
 		Time: time.Now(),
 	}
-	resp, err := f.Get(url, ctx)
+	resp, err = f.Get(url, ctx)
 	if err != nil {
 		return
 	}

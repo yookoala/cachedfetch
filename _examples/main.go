@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/yookoala/cachedfetcher"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -12,20 +13,31 @@ import (
 
 var dbfile = flag.String("db", "cache.db", "The SQLite3 database file name")
 
-func main() {
+type example func(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 
-	//
-	flag.Parse()
+var examples = map[string]example{
+	"example1": example1,
+	"example2": example2,
+}
 
-	// test server for examples
-	mux := http.NewServeMux()
+func ExampleServer() (mux *http.ServeMux) {
+	mux = http.NewServeMux()
 	mux.Handle("/example/1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Hello, example 1")
 	}))
 	mux.Handle("/example/2", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Hello, example 2")
 	}))
-	ts := httptest.NewServer(mux)
+	return
+}
+
+func main() {
+
+	// parse to get db file name
+	flag.Parse()
+
+	// test server for examples
+	ts := httptest.NewServer(ExampleServer())
 	defer ts.Close()
 
 	// open database for test
@@ -35,15 +47,15 @@ func main() {
 	}
 
 	// run examples with test server
-	log.Printf("----")
-	err = example1(ts.URL, db)
-	if err != nil {
-		log.Printf("%s", err)
-	}
-	log.Printf("----")
-	err = example2(ts.URL, db)
-	if err != nil {
-		log.Printf("%s", err)
+	for name, exp := range examples {
+		log.Printf("---- %s:", name)
+		resp, err := exp(ts.URL, db)
+		if err != nil {
+			log.Printf("Error:")
+			log.Printf("Response Size: %d", resp.ContentLength)
+			log.Printf("Response Body: %s", resp.Body)
+			log.Fatalf("Error Message: %s", err)
+		}
 	}
 	log.Printf("----")
 }
