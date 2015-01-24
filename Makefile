@@ -58,6 +58,7 @@ _gopath/src/github.com/yookoala/cachedfetcher:
 _gopath/src/github.com/mattn/go-sqlite3:
 	@echo "Install go-sqlite3"
 	@echo "------------------"
+	sqlite3 --version
 	go get -u github.com/mattn/go-sqlite3
 	@echo
 
