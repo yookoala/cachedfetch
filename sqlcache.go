@@ -105,19 +105,11 @@ func (q *SqlCacheQuery) SortBy(crits ...int) CacheQuery {
 	return q
 }
 
-func (q *SqlCacheQuery) GetAll() (resps []Response, err error) {
-	sql := "SELECT `url`, `context_str`, `context_time`, " +
-		"`fetched_time`, `status`, `status_code`, `proto`, " +
-		"`content_length`, `transfer_encoding`, " +
-		"`header`, `trailer`, `request`, " +
-		"`body` " +
-		"FROM `cachedfetch_cache` "
-
-	var t time.Time
-
-	// parameters to build where clause
+// generate SQL where clause based on query parameters
+func (q *SqlCacheQuery) sqlWhere() (c string, args []interface{}) {
 	w := make([]string, 0, 4)
-	args := make([]interface{}, 0, 4)
+	args = make([]interface{}, 0, 4)
+	var t time.Time // empty time for reference
 
 	if q.URL != "" {
 		w = append(w, "`url` = ?")
@@ -135,9 +127,13 @@ func (q *SqlCacheQuery) GetAll() (resps []Response, err error) {
 		w = append(w, "`fetched_time` = ?")
 		args = append(args, q.Context.Fetched.Unix())
 	}
-	whereClause := "WHERE " + strings.Join(w, " AND ")
+	c = "WHERE " + strings.Join(w, " AND ")
 
-	// parameters to build order clause
+	return
+}
+
+// generate SQL order clause based on query parameters
+func (q *SqlCacheQuery) sqlOrder() (c string) {
 	if len(q.Order) == 0 {
 		// default sort
 		q.Order = []int{
@@ -162,10 +158,32 @@ func (q *SqlCacheQuery) GetAll() (resps []Response, err error) {
 			o = append(o, sqlf)
 		}
 	}
-	orderClause := "ORDER BY " + strings.Join(o, ", ")
+	c = "ORDER BY " + strings.Join(o, ", ")
+	return
+}
+
+func (q *SqlCacheQuery) Sql() (sql string, args []interface{}) {
+
+	// select clause
+	sql = "SELECT `url`, `context_str`, `context_time`, " +
+		"`fetched_time`, `status`, `status_code`, `proto`, " +
+		"`content_length`, `transfer_encoding`, " +
+		"`header`, `trailer`, `request`, " +
+		"`body` " +
+		"FROM `cachedfetch_cache` "
+
+	// build other clauses
+	var where, order string
+	where, args = q.sqlWhere()
+	order = q.sqlOrder()
+	sql += " " + where + " " + order
+	return
+}
+
+func (q *SqlCacheQuery) GetAll() (resps []Response, err error) {
 
 	// query
-	sql += " " + whereClause + " " + orderClause
+	sql, args := q.Sql()
 	stmt, err := q.Cache.DB.Prepare(sql)
 	if err != nil {
 		return
