@@ -19,6 +19,9 @@ type Cache interface {
 
 	// find cached response with context string
 	FindIn(str string) CacheQuery
+
+	// find cached response with context time
+	FindAt(t time.Time) CacheQuery
 }
 
 type CacheQuery interface {
