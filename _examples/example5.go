@@ -48,8 +48,8 @@ func example5(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 		// search the existing url
 		resps, err = c.
 			FindAt(t).
-			ContextStr("example/5").
-			Get()
+			In("example/5").
+			GetAll()
 		if err != nil {
 			return
 		}

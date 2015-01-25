@@ -27,10 +27,10 @@ func example1(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 	// search for previous cache of the URL in the context
 	resps, err := c.
 		Find(url).
-		ContextStr(ctx.Str).
-		ContextTime(now).
-		FetchedTime(now).
-		Get()
+		In(ctx.Str).
+		At(now).
+		FetchedAt(now).
+		GetAll()
 	if err != nil {
 		return
 	}

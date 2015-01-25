@@ -45,7 +45,7 @@ func example3(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 		Find(url).
 		SortBy(cachedfetcher.OrderContextTime).
 		SortBy(cachedfetcher.OrderFetchedTimeDesc).
-		Get()
+		GetAll()
 	if err != nil {
 		return
 	}

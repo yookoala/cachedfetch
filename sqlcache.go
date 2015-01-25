@@ -83,17 +83,17 @@ type SqlCacheQuery struct {
 	Order   []int
 }
 
-func (q *SqlCacheQuery) ContextStr(Str string) CacheQuery {
+func (q *SqlCacheQuery) In(Str string) CacheQuery {
 	q.Context.Str = Str
 	return q
 }
 
-func (q *SqlCacheQuery) ContextTime(t time.Time) CacheQuery {
+func (q *SqlCacheQuery) At(t time.Time) CacheQuery {
 	q.Context.Time = t
 	return q
 }
 
-func (q *SqlCacheQuery) FetchedTime(t time.Time) CacheQuery {
+func (q *SqlCacheQuery) FetchedAt(t time.Time) CacheQuery {
 	q.Context.Fetched = t
 	return q
 }
@@ -105,7 +105,7 @@ func (q *SqlCacheQuery) SortBy(crits ...int) CacheQuery {
 	return q
 }
 
-func (q *SqlCacheQuery) Get() (resps []Response, err error) {
+func (q *SqlCacheQuery) GetAll() (resps []Response, err error) {
 	sql := "SELECT `url`, `context_str`, `context_time`, " +
 		"`fetched_time`, `status`, `status_code`, `proto`, " +
 		"`content_length`, `transfer_encoding`, " +

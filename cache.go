@@ -25,9 +25,19 @@ type Cache interface {
 }
 
 type CacheQuery interface {
-	ContextStr(Str string) CacheQuery
-	ContextTime(t time.Time) CacheQuery
-	FetchedTime(t time.Time) CacheQuery
+
+	// add context string as condition
+	In(Str string) CacheQuery
+
+	// add context time as condition
+	At(t time.Time) CacheQuery
+
+	// add fetch time as condition
+	FetchedAt(t time.Time) CacheQuery
+
+	// add sorting requirement(s)
 	SortBy(crits ...int) CacheQuery
-	Get() (resps []Response, err error)
+
+	// execute the query
+	GetAll() (resps []Response, err error)
 }
