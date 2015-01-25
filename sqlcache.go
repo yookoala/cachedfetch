@@ -2,6 +2,7 @@ package cachedfetcher
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -81,6 +82,7 @@ type SqlCacheQuery struct {
 	Context Context
 	Cache   *SqlCache
 	Order   []int
+	L       int // limit
 }
 
 func (q *SqlCacheQuery) In(Str string) CacheQuery {
@@ -102,6 +104,11 @@ func (q *SqlCacheQuery) SortBy(crits ...int) CacheQuery {
 	for _, crit := range crits {
 		q.Order = append(q.Order, crit)
 	}
+	return q
+}
+
+func (q *SqlCacheQuery) Limit(l int) CacheQuery {
+	q.L = l
 	return q
 }
 
@@ -162,6 +169,15 @@ func (q *SqlCacheQuery) sqlOrder() (c string) {
 	return
 }
 
+// generate SQL limit clause
+func (q *SqlCacheQuery) sqlLimit() (c string) {
+	if q.L > 0 {
+		c = fmt.Sprintf("LIMIT %d", q.L)
+	}
+	return
+}
+
+// generate final SQL
 func (q *SqlCacheQuery) Sql() (sql string, args []interface{}) {
 
 	// select clause
@@ -173,10 +189,11 @@ func (q *SqlCacheQuery) Sql() (sql string, args []interface{}) {
 		"FROM `cachedfetch_cache` "
 
 	// build other clauses
-	var where, order string
+	var where, order, limit string
 	where, args = q.sqlWhere()
 	order = q.sqlOrder()
-	sql += " " + where + " " + order
+	limit = q.sqlLimit()
+	sql += " " + where + " " + order + " " + limit
 	return
 }
 

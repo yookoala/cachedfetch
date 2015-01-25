@@ -21,6 +21,7 @@ var examples = map[string]example{
 	"example3": example3,
 	"example4": example4,
 	"example5": example5,
+	"example6": example6,
 }
 
 func ExampleServer() (mux *http.ServeMux) {
@@ -59,6 +60,7 @@ func ExampleServer() (mux *http.ServeMux) {
 			getCounterPage(fmt.Sprintf("Example 4.%d", i)))
 	}
 	mux.Handle("/example/5", getCounterPage("Example 5"))
+	mux.Handle("/example/6", getCounterPage("Example 6"))
 	return
 }
 

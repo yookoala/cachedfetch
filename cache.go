@@ -38,6 +38,9 @@ type CacheQuery interface {
 	// add sorting requirement(s)
 	SortBy(crits ...int) CacheQuery
 
+	// limit the number of cached response to retrieve
+	Limit(int) CacheQuery
+
 	// execute the query
 	GetAll() (resps []Response, err error)
 }

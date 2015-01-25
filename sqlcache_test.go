@@ -88,3 +88,29 @@ func TestSqlCacheQueryOrder(t *testing.T) {
 			sql, sqlE)
 	}
 }
+
+func TestSqlCacheQueryLimit(t *testing.T) {
+	var q = &SqlCacheQuery{
+		L: 1123,
+	}
+	sql := q.sqlLimit()
+	sqlE := "LIMIT 1123"
+	if sql != sqlE {
+		t.Errorf("SQL generated is different from expected.\n"+
+			"Expect: \"%s\"\n"+
+			"Get:    \"%s\"",
+			sql, sqlE)
+	}
+}
+
+func TestSqlCacheQueryLimit0(t *testing.T) {
+	var q = &SqlCacheQuery{}
+	sql := q.sqlLimit()
+	sqlE := ""
+	if sql != sqlE {
+		t.Errorf("SQL generated is different from expected.\n"+
+			"Expect: \"%s\"\n"+
+			"Get:    \"%s\"",
+			sql, sqlE)
+	}
+}
