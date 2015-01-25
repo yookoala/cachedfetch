@@ -13,7 +13,7 @@ func example6(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 
 	log.Print("# Get caches while limiting the number of records")
 
-	url := host + "/example/2"
+	url := host + "/example/6"
 	c := cachedfetcher.NewSqlCache(db)
 	f := cachedfetcher.New(c)
 
