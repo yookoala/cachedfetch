@@ -13,7 +13,12 @@ const (
 
 type Cache interface {
 	Add(url string, ctx Context, r *Response) (err error)
+
+	// find cached response with URL field
 	Find(url string) CacheQuery
+
+	// find cached response with context string
+	FindIn(str string) CacheQuery
 }
 
 type CacheQuery interface {

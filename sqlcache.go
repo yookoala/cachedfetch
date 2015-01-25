@@ -52,6 +52,18 @@ func (c *SqlCache) Find(url string) CacheQuery {
 	}
 }
 
+// find with context string
+func (c *SqlCache) FindIn(str string) CacheQuery {
+	ctx := Context{
+		Str: str,
+	}
+	return &SqlCacheQuery{
+		Context: ctx,
+		Cache:   c,
+		Order:   make([]int, 0),
+	}
+}
+
 type SqlCacheQuery struct {
 	URL     string
 	Context Context

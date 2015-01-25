@@ -19,6 +19,7 @@ var examples = map[string]example{
 	"example1": example1,
 	"example2": example2,
 	"example3": example3,
+	"example4": example4,
 }
 
 func ExampleServer() (mux *http.ServeMux) {
@@ -33,18 +34,21 @@ func ExampleServer() (mux *http.ServeMux) {
 		}
 	}()
 
+	// a simple page the return ever changing content
+	counterPage := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		count := <-counts
+		fmt.Fprintf(w, "Counter: %03d", count)
+	})
+
 	// bind example paths
 	mux.Handle("/example/1", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Hello, example 1")
 	}))
-	mux.Handle("/example/2", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		count := <-counts
-		fmt.Fprintf(w, "Counter: %03d", count)
-	}))
-	mux.Handle("/example/3", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		count := <-counts
-		fmt.Fprintf(w, "Counter: %03d", count)
-	}))
+	mux.Handle("/example/2", counterPage)
+	mux.Handle("/example/3", counterPage)
+	for i := 1; i <= 10; i++ {
+		mux.Handle(fmt.Sprintf("/example/4/%d", i), counterPage)
+	}
 	return
 }
 
