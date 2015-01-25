@@ -18,6 +18,7 @@ type example func(host string, db *sql.DB) (resp *cachedfetcher.Response, err er
 var examples = map[string]example{
 	"example1": example1,
 	"example2": example2,
+	"example3": example3,
 }
 
 func ExampleServer() (mux *http.ServeMux) {
@@ -37,6 +38,10 @@ func ExampleServer() (mux *http.ServeMux) {
 		fmt.Fprint(w, "Hello, example 1")
 	}))
 	mux.Handle("/example/2", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		count := <-counts
+		fmt.Fprintf(w, "Counter: %03d", count)
+	}))
+	mux.Handle("/example/3", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		count := <-counts
 		fmt.Fprintf(w, "Counter: %03d", count)
 	}))

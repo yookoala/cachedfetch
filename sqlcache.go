@@ -48,6 +48,7 @@ func (c *SqlCache) Find(url string) CacheQuery {
 	return &SqlCacheQuery{
 		URL:   url,
 		Cache: c,
+		Order: make([]int, 0),
 	}
 }
 
@@ -55,6 +56,7 @@ type SqlCacheQuery struct {
 	URL     string
 	Context Context
 	Cache   *SqlCache
+	Order   []int
 }
 
 func (q *SqlCacheQuery) ContextStr(Str string) CacheQuery {
@@ -72,6 +74,13 @@ func (q *SqlCacheQuery) FetchedTime(t time.Time) CacheQuery {
 	return q
 }
 
+func (q *SqlCacheQuery) SortBy(crits ...int) CacheQuery {
+	for _, crit := range crits {
+		q.Order = append(q.Order, crit)
+	}
+	return q
+}
+
 func (q *SqlCacheQuery) Get() (resps []Response, err error) {
 	sql := "SELECT `url`, `context_str`, `context_time`, " +
 		"`fetched_time`, `status`, `status_code`, `proto`, " +
@@ -79,11 +88,10 @@ func (q *SqlCacheQuery) Get() (resps []Response, err error) {
 		"`header`, `trailer`, `request`, " +
 		"`body` " +
 		"FROM `cachedfetch_cache` "
-	sortClause := " ORDER BY `context_time` DESC, `fetched_time` DESC"
 
 	var t time.Time
 
-	// parameters to build query
+	// parameters to build where clause
 	w := make([]string, 0, 4)
 	args := make([]interface{}, 0, 4)
 
@@ -103,10 +111,37 @@ func (q *SqlCacheQuery) Get() (resps []Response, err error) {
 		w = append(w, "`fetched_time` = ?")
 		args = append(args, q.Context.Fetched.Unix())
 	}
-	sql += " WHERE " + strings.Join(w, " AND ")
-	sql += sortClause
+	whereClause := "WHERE " + strings.Join(w, " AND ")
+
+	// parameters to build order clause
+	if len(q.Order) == 0 {
+		// default sort
+		q.Order = []int{
+			OrderContextTimeDesc,
+			OrderFetchedTimeDesc,
+		}
+	}
+	o := make([]string, 0, cap(q.Order))
+	for _, field := range q.Order {
+		var sqlf string
+		switch field {
+		case OrderContextTime:
+			sqlf = "`context_time`"
+		case OrderContextTimeDesc:
+			sqlf = "`context_time` DESC"
+		case OrderFetchedTime:
+			sqlf = "`fetched_time`"
+		case OrderFetchedTimeDesc:
+			sqlf = "`fetched_time` DESC"
+		}
+		if sqlf != "" {
+			o = append(o, sqlf)
+		}
+	}
+	orderClause := "ORDER BY " + strings.Join(o, ", ")
 
 	// query
+	sql += " " + whereClause + " " + orderClause
 	stmt, err := q.Cache.DB.Prepare(sql)
 	if err != nil {
 		return
