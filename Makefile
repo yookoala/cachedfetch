@@ -25,7 +25,7 @@ test.example: \
 	@echo "Run Example(s)"
 	@echo "--------------"
 	cd _examples && go build -o ${EXAMPLE}/run-all
-	./_examples/run-all -db ./_data/test.sqlite3.db
+	./_examples/run-all -driver "sqlite3" -db "file:./_data/test.sqlite3.db"
 	@echo
 
 fmt:

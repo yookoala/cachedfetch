@@ -11,7 +11,7 @@ import (
 	"net/http/httptest"
 )
 
-var dbfile = flag.String("db", "cache.db", "The SQLite3 database file name")
+var dbdriver, dbsrc *string
 
 type example func(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 
@@ -64,17 +64,23 @@ func ExampleServer() (mux *http.ServeMux) {
 	return
 }
 
-func main() {
+func init() {
 
-	// parse to get db file name
+	// read flags
+	dbdriver = flag.String("driver", "sqlite3", "Database driver")
+	dbsrc = flag.String("db", "file:./cache.db", "Database source")
 	flag.Parse()
+
+}
+
+func main() {
 
 	// test server for examples
 	ts := httptest.NewServer(ExampleServer())
 	defer ts.Close()
 
 	// open database for test
-	db, err := sql.Open("sqlite3", *dbfile)
+	db, err := sql.Open(*dbdriver, *dbsrc)
 	if err != nil {
 		log.Fatal(err)
 	}
