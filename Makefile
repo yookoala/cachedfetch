@@ -8,7 +8,7 @@ export EXAMPLE=$(shell pwd)/_examples
 
 all: fmt test
 
-test: test.main test.example
+test: test.main test.example.sqlite3
 
 test.main:
 	@echo "Main Tests"
@@ -17,16 +17,21 @@ test.main:
 	go test
 	@echo
 
-test.example: \
-	_gopath/src \
-	_gopath/src/github.com/mattn/go-sqlite3 \
-	_gopath/src/github.com/go-sql-driver/mysql \
+test.example.sqlite3: \
 	_test.database \
-	cachedfetcher
-	@echo "Run Example(s)"
-	@echo "--------------"
-	cd _examples && go build -o ${EXAMPLE}/run-all
+	cachedfetcher \
+	_examples/run-all
+	@echo "Run Examples on Sqlite3"
+	@echo "-----------------------"
 	./_examples/run-all -driver "sqlite3" -db "file:./_data/test.sqlite3.db"
+	@echo
+
+test.example.mysql: \
+	cachedfetcher \
+	_examples/run-all
+	@echo "Run Examples on MySQL / MariaDB"
+	@echo "-------------------------------"
+	./_examples/run-all -driver "mysql" -db "${MYSQL}"
 	@echo
 
 fmt:
@@ -38,6 +43,16 @@ fmt:
 
 clean:
 	rm -Rf _gopath
+
+_examples/run-all: \
+	_gopath/src \
+	_gopath/src/github.com/mattn/go-sqlite3 \
+	_gopath/src/github.com/go-sql-driver/mysql \
+	cachedfetcher
+	@echo "Build Example(s) runner"
+	@echo "-----------------------"
+	cd _examples && go build -o ${EXAMPLE}/run-all
+	@echo
 
 _gopath/src:
 	@echo "Create testing GOPATH"
@@ -75,4 +90,5 @@ _test.database:
 	cat _data/setup_sqlite3.sql | sqlite3 _data/test.sqlite3.db
 	@echo
 
-.PHONY: test test.main test.example _test.database cachedfetcher clean
+.PHONY: test test.main test.example.sqlite3 test.example.mysql
+.PHONY: _test.database cachedfetcher clean

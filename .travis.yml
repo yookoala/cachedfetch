@@ -7,5 +7,11 @@ go:
   - 1.4
   - tip
 
+before_script:
+  - mysql -u root -e 'create database `cachedfetcher`'
+  - mysql -u root -e 'grant all on cachedfetcher.* to travis'
+  - mysql -u travis cachedfetcher < _data/setup_mysql.sql
+
 script:
   - make test
+  - make test.example.mysql MYSQL="travis@/cachedfetcher"
