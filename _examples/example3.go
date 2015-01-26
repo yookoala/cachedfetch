@@ -41,13 +41,23 @@ func example3(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 	}
 
 	// search the existing url
-	resps, err := c.
+	rs, err := c.
 		Find(url).
 		SortBy(cachedfetcher.OrderContextTime).
 		SortBy(cachedfetcher.OrderFetchedTimeDesc).
 		GetAll()
 	if err != nil {
 		return
+	}
+
+	// load response into response slice
+	resps := make([]cachedfetcher.Response, 0)
+	for rs.Next() {
+		resp, err := rs.Get()
+		if err != nil {
+			log.Fatal("Error getting next response")
+		}
+		resps = append(resps, resp)
 	}
 
 	// get cached items and display

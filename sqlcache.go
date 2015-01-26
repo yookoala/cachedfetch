@@ -197,7 +197,7 @@ func (q *SqlCacheQuery) Sql() (sql string, args []interface{}) {
 	return
 }
 
-func (q *SqlCacheQuery) GetAll() (resps []Response, err error) {
+func (q *SqlCacheQuery) GetAll() (resps ResponseColl, err error) {
 
 	// query
 	sql, args := q.Sql()
@@ -212,7 +212,7 @@ func (q *SqlCacheQuery) GetAll() (resps []Response, err error) {
 	defer rows.Close()
 
 	// retrieve result
-	resps = make([]Response, 0)
+	rs := make([]Response, 0)
 	for rows.Next() {
 
 		resp := Response{}
@@ -235,12 +235,42 @@ func (q *SqlCacheQuery) GetAll() (resps []Response, err error) {
 
 		resp.ContextTime = time.Unix(ctime, 0)
 		resp.FetchedTime = time.Unix(ftime, 0)
-		resps = append(resps, resp)
+		rs = append(rs, resp)
 
 		if err != nil {
 			return
 		}
 	}
+	resps = &SqlResponseColl{
+		col: rs,
+	}
 	err = rows.Err()
+	return
+}
+
+type SqlResponseColl struct {
+	col []Response
+	cur int
+}
+
+func (rc *SqlResponseColl) Next() bool {
+	rc.cur++
+	if rc.cur <= len(rc.col) {
+		return true
+	}
+	return false
+}
+
+func (rc *SqlResponseColl) Get() (resp Response, err error) {
+	if rc.cur <= len(rc.col) {
+		resp = rc.col[rc.cur-1]
+	} else {
+		err = fmt.Errorf("Getting item out of range")
+	}
+	return
+}
+
+func (rc *SqlResponseColl) Close() (err error) {
+	// place holder
 	return
 }

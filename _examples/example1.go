@@ -25,7 +25,7 @@ func example1(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 	}
 
 	// search for previous cache of the URL in the context
-	resps, err := c.
+	rs, err := c.
 		Find(url).
 		In(ctx.Str).
 		At(now).
@@ -41,6 +41,16 @@ func example1(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 	log.Printf("Status: %s", resp.Status)
 	log.Printf("Size:   %d", resp.ContentLength)
 	log.Printf("Body:   \"%s\"", string(resp.Body))
+
+	// load response into response slice
+	resps := make([]cachedfetcher.Response, 0)
+	for rs.Next() {
+		resp, err := rs.Get()
+		if err != nil {
+			log.Fatal("Error getting next response")
+		}
+		resps = append(resps, resp)
+	}
 
 	// check the cached responses
 	if len(resps) == 0 {

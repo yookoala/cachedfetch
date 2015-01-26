@@ -114,3 +114,53 @@ func TestSqlCacheQueryLimit0(t *testing.T) {
 			sql, sqlE)
 	}
 }
+
+func TestSqlResponseColl(t *testing.T) {
+	var rc ResponseColl
+	rc = &SqlResponseColl{}
+	t.Logf("SqlResponseColl implements ResponseColl: %#v", rc)
+}
+
+func TestSqlResponseCollRoutines(t *testing.T) {
+	rc := SqlResponseColl{
+		col: []Response{
+			Response{
+				URL:        "Response 1",
+				StatusCode: 1,
+			},
+			Response{
+				URL:        "Response 2",
+				StatusCode: 2,
+			},
+			Response{
+				URL:        "Response 3",
+				StatusCode: 3,
+			},
+			Response{
+				URL:        "Response 4",
+				StatusCode: 4,
+			},
+			Response{
+				URL:        "Response 5",
+				StatusCode: 5,
+			},
+		},
+	}
+
+	count := 0
+	for rc.Next() {
+		count++
+		resp, err := rc.Get()
+		if err != nil {
+			t.Errorf("Error: %s", err.Error())
+		}
+		if resp.StatusCode != count {
+			t.Errorf("StatusCode not correct. Expecting %d but get %d", count, resp.StatusCode)
+		}
+	}
+	if err := rc.Close(); err != nil {
+		if err != nil {
+			t.Errorf("Error closing ResponseCollection: %s", err.Error())
+		}
+	}
+}

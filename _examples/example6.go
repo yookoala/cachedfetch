@@ -44,12 +44,22 @@ func example6(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 	}
 
 	// search the existing url
-	resps, err := c.
+	rs, err := c.
 		Find(url).
 		Limit(l2).
 		GetAll()
 	if err != nil {
 		return
+	}
+
+	// load response into response slice
+	resps := make([]cachedfetcher.Response, 0)
+	for rs.Next() {
+		resp, err := rs.Get()
+		if err != nil {
+			log.Fatal("Error getting next response")
+		}
+		resps = append(resps, resp)
 	}
 
 	// check number of response

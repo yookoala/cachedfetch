@@ -42,5 +42,18 @@ type CacheQuery interface {
 	Limit(int) CacheQuery
 
 	// execute the query
-	GetAll() (resps []Response, err error)
+	GetAll() (resps ResponseColl, err error)
+}
+
+type ResponseColl interface {
+
+	// load the next response
+	// must be called before each Get() call
+	Next() bool
+
+	// get 1 single response
+	Get() (resp Response, err error)
+
+	// close the response collection
+	Close() (err error)
 }
