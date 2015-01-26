@@ -20,6 +20,7 @@ test.main:
 test.example: \
 	_gopath/src \
 	_gopath/src/github.com/mattn/go-sqlite3 \
+	_gopath/src/github.com/go-sql-driver/mysql \
 	_test.database \
 	cachedfetcher
 	@echo "Run Example(s)"
@@ -60,6 +61,12 @@ _gopath/src/github.com/mattn/go-sqlite3:
 	@echo "------------------"
 	sqlite3 --version
 	go get -u github.com/mattn/go-sqlite3
+	@echo
+
+_gopath/src/github.com/go-sql-driver/mysql:
+	@echo "Install go-sql-driver/mysql"
+	@echo "---------------------------"
+	go get -u github.com/go-sql-driver/mysql
 	@echo
 
 _test.database:
