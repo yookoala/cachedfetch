@@ -55,7 +55,7 @@ func example2(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 		if err != nil {
 			log.Fatal("Error getting next response")
 		}
-		resps = append(resps, resp)
+		resps = append(resps, *resp)
 	}
 
 	// get cached items and display

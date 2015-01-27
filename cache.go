@@ -52,7 +52,7 @@ type ResponseColl interface {
 	Next() bool
 
 	// get 1 single response
-	Get() (resp Response, err error)
+	Get() (resp *Response, err error)
 
 	// close the response collection
 	Close() (err error)

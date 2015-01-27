@@ -261,9 +261,9 @@ func (rc *SqlResponseColl) Next() bool {
 	return false
 }
 
-func (rc *SqlResponseColl) Get() (resp Response, err error) {
+func (rc *SqlResponseColl) Get() (resp *Response, err error) {
 	if rc.cur <= len(rc.col) {
-		resp = rc.col[rc.cur-1]
+		resp = &rc.col[rc.cur-1]
 	} else {
 		err = fmt.Errorf("Getting item out of range")
 	}
