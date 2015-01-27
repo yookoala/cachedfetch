@@ -2,7 +2,7 @@ package cachedfetcher
 
 import (
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -81,11 +81,7 @@ func (r *Response) ReadRaw(raw *http.Response) (err error) {
 	*/
 
 	// read body
-	r.Body = make([]byte, raw.ContentLength)
-	_, err = raw.Body.Read(r.Body)
 	defer raw.Body.Close()
-	if err == io.EOF {
-		err = nil
-	}
+	r.Body, err = ioutil.ReadAll(raw.Body)
 	return
 }
