@@ -26,6 +26,14 @@ test.example.sqlite3: \
 	./_examples/run-all -driver "sqlite3" -db "file:./_data/test.sqlite3.db"
 	@echo
 
+test.example.psql: \
+	cachedfetcher \
+	_examples/run-all
+	@echo "Run Examples on PostgreSQL"
+	@echo "--------------------------"
+	./_examples/run-all -driver "postgres" -db "${PSQL}"
+	@echo
+
 test.example.mysql: \
 	cachedfetcher \
 	_examples/run-all
@@ -47,6 +55,7 @@ clean:
 _examples/run-all: \
 	_gopath/src \
 	_gopath/src/github.com/mattn/go-sqlite3 \
+	_gopath/src/github.com/lib/pq \
 	_gopath/src/github.com/go-sql-driver/mysql \
 	cachedfetcher
 	@echo "Build Example(s) runner"
@@ -76,6 +85,12 @@ _gopath/src/github.com/mattn/go-sqlite3:
 	@echo "------------------"
 	sqlite3 --version
 	go get -u github.com/mattn/go-sqlite3
+	@echo
+
+_gopath/src/github.com/lib/pq:
+	@echo "Install lib/pq"
+	@echo "--------------"
+	go get -u github.com/lib/pq
 	@echo
 
 _gopath/src/github.com/go-sql-driver/mysql:

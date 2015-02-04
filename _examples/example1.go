@@ -13,6 +13,7 @@ func example1(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 
 	url := host + "/example/1"
 	c := cachedfetcher.NewSqlCache(db)
+	c.Type = dbtype
 	f := cachedfetcher.New(c)
 	now := time.Now()
 	ctx := cachedfetcher.Context{

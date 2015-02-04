@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"flag"
 	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yookoala/cachedfetcher"
 	"log"
@@ -11,6 +12,7 @@ import (
 )
 
 var dbdriver, dbsrc *string
+var dbtype int
 
 type example func(host string, db *sql.DB) (resp *cachedfetcher.Response, err error)
 
@@ -29,6 +31,11 @@ func init() {
 	dbdriver = flag.String("driver", "sqlite3", "Database driver")
 	dbsrc = flag.String("db", "file:./cache.db", "Database source")
 	flag.Parse()
+
+	// set dbtype according to driver name
+	if *dbdriver == "postgres" {
+		dbtype = cachedfetcher.SQL_PSQL
+	}
 
 }
 
