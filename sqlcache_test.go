@@ -10,6 +10,37 @@ func TestSqlCache(t *testing.T) {
 	t.Log("SqlCache implements Cache: %#v", c)
 }
 
+func TestSqlCacheSqlDefault(t *testing.T) {
+	c := &SqlCache{}
+	if c.Type != SQL_MYSQL {
+		t.Errorf("Default CacheQuery.Type should be SQL_MYSQL")
+	}
+}
+
+func TestSqlCacheSqlMySQL(t *testing.T) {
+	c := &SqlCache{
+		Type: SQL_MYSQL,
+	}
+	raw := "SELECT * FROM t1 WHERE a=? AND b=? AND c=?"
+	s := c.Sql(raw)
+	if s != raw {
+		t.Errorf("SqlCache.Sql return original SQL. Returned: %s", s)
+	}
+}
+
+func TestSqlCacheSqlPSQL(t *testing.T) {
+	c := &SqlCache{
+		Type: SQL_PSQL,
+	}
+	raw := "SELECT * FROM t1 WHERE a=? AND b=? AND c=?"
+	expected := "SELECT * FROM t1 WHERE a=$1 AND b=$2 AND c=$3"
+	s := c.Sql(raw)
+	if s != expected {
+		t.Errorf("SqlCache.Sql did not format SQL into PSQL "+
+			"position parameter. Returned: %s", s)
+	}
+}
+
 func TestSqlCacheQuery(t *testing.T) {
 	var c CacheQuery = &SqlCacheQuery{}
 	t.Log("SqlCacheQuery implements CacheQuery: %#v", c)
@@ -28,8 +59,8 @@ func TestSqlCacheQueryWhere(t *testing.T) {
 		Context: Ctx,
 	}
 	sql, args := q.sqlWhere()
-	sqlE := "WHERE `url` = ? AND `context_str` = ? AND " +
-		"`context_time` = ? AND `fetched_time` = ?"
+	sqlE := "WHERE url = ? AND context_str = ? AND " +
+		"context_time = ? AND fetched_time = ?"
 
 	// assert result parameters
 	if sql != sqlE {
@@ -80,7 +111,7 @@ func TestSqlCacheQueryOrder(t *testing.T) {
 		},
 	}
 	sql := q.sqlOrder()
-	sqlE := "ORDER BY `context_time`, `fetched_time` DESC"
+	sqlE := "ORDER BY context_time, fetched_time DESC"
 	if sql != sqlE {
 		t.Errorf("SQL generated is different from expected.\n"+
 			"Expect: \"%s\"\n"+

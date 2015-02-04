@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+const (
+	SQL_MYSQL = iota
+	SQL_PSQL  = iota
+)
+
 func NewSqlCache(db *sql.DB) *SqlCache {
 	return &SqlCache{
 		DB: db,
@@ -14,14 +19,37 @@ func NewSqlCache(db *sql.DB) *SqlCache {
 }
 
 type SqlCache struct {
-	DB *sql.DB
+	DB   *sql.DB
+	Type int
+}
+
+func (c *SqlCache) Sql(s string) string {
+	if c.Type == SQL_MYSQL {
+		return s
+	}
+	so := ""
+	pos := 0
+	for _, ch := range s {
+		if ch != '?' {
+			so += string(ch)
+		} else {
+			pos++
+			so += fmt.Sprintf("$%d", pos)
+		}
+	}
+	return so
+}
+
+func (c *SqlCache) Prepare(s string) (stmt *sql.Stmt, err error) {
+	stmt, err = c.DB.Prepare(c.Sql(s))
+	return
 }
 
 func (c *SqlCache) Add(url string, ctx Context, r *Response) (err error) {
-	stmt, err := c.DB.Prepare("INSERT INTO `cachedfetch_cache` " +
-		"(`url`, `context_str`, `context_time`, `fetched_time`, " +
-		"`status`, `status_code`, `proto`, `content_length`, " +
-		"`transfer_encoding`, `header`, `trailer`, `request`, `body`)" +
+	stmt, err := c.Prepare("INSERT INTO cachedfetch_cache " +
+		"(url, context_str, context_time, fetched_time, " +
+		"status, status_code, proto, content_length, " +
+		"transfer_encoding, header, trailer, request, body)" +
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return
@@ -119,19 +147,19 @@ func (q *SqlCacheQuery) sqlWhere() (c string, args []interface{}) {
 	var t time.Time // empty time for reference
 
 	if q.URL != "" {
-		w = append(w, "`url` = ?")
+		w = append(w, "url = ?")
 		args = append(args, q.URL)
 	}
 	if q.Context.Str != "" {
-		w = append(w, "`context_str` = ?")
+		w = append(w, "context_str = ?")
 		args = append(args, q.Context.Str)
 	}
 	if q.Context.Time != t {
-		w = append(w, "`context_time` = ?")
+		w = append(w, "context_time = ?")
 		args = append(args, q.Context.Time.Unix())
 	}
 	if q.Context.Fetched != t {
-		w = append(w, "`fetched_time` = ?")
+		w = append(w, "fetched_time = ?")
 		args = append(args, q.Context.Fetched.Unix())
 	}
 	c = "WHERE " + strings.Join(w, " AND ")
@@ -153,13 +181,13 @@ func (q *SqlCacheQuery) sqlOrder() (c string) {
 		var sqlf string
 		switch field {
 		case OrderContextTime:
-			sqlf = "`context_time`"
+			sqlf = "context_time"
 		case OrderContextTimeDesc:
-			sqlf = "`context_time` DESC"
+			sqlf = "context_time DESC"
 		case OrderFetchedTime:
-			sqlf = "`fetched_time`"
+			sqlf = "fetched_time"
 		case OrderFetchedTimeDesc:
-			sqlf = "`fetched_time` DESC"
+			sqlf = "fetched_time DESC"
 		}
 		if sqlf != "" {
 			o = append(o, sqlf)
@@ -178,15 +206,15 @@ func (q *SqlCacheQuery) sqlLimit() (c string) {
 }
 
 // generate final SQL
-func (q *SqlCacheQuery) Sql() (sql string, args []interface{}) {
+func (q *SqlCacheQuery) genGetSql() (sql string, args []interface{}) {
 
 	// select clause
-	sql = "SELECT `url`, `context_str`, `context_time`, " +
-		"`fetched_time`, `status`, `status_code`, `proto`, " +
-		"`content_length`, `transfer_encoding`, " +
-		"`header`, `trailer`, `request`, " +
-		"`body` " +
-		"FROM `cachedfetch_cache` "
+	sql = "SELECT url, context_str, context_time, " +
+		"fetched_time, status, status_code, proto, " +
+		"content_length, transfer_encoding, " +
+		"header, trailer, request, " +
+		"body " +
+		"FROM cachedfetch_cache "
 
 	// build other clauses
 	var where, order, limit string
@@ -200,8 +228,8 @@ func (q *SqlCacheQuery) Sql() (sql string, args []interface{}) {
 func (q *SqlCacheQuery) GetAll() (resps ResponseColl, err error) {
 
 	// query
-	sql, args := q.Sql()
-	stmt, err := q.Cache.DB.Prepare(sql)
+	sql, args := q.genGetSql()
+	stmt, err := q.Cache.Prepare(sql)
 	if err != nil {
 		return
 	}
