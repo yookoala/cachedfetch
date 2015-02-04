@@ -44,6 +44,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// test database connection
+	_, err = db.Exec("SELECT 1")
+	if err != nil {
+		log.Printf("Unable to connect to database")
+		log.Fatal(err)
+	}
+
 	// run examples with test server
 	for name, exp := range examples {
 		log.Printf("#### %s ####", name)
