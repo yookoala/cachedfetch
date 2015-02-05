@@ -24,7 +24,18 @@ func TestSqlCacheSqlMySQL(t *testing.T) {
 	raw := "SELECT * FROM t1 WHERE a=? AND b=? AND c=?"
 	s := c.Sql(raw)
 	if s != raw {
-		t.Errorf("SqlCache.Sql return original SQL. Returned: %s", s)
+		t.Errorf("SqlCache.Sql expected original SQL. Returned: %s", s)
+	}
+}
+
+func TestSqlCacheSqlSqlite3(t *testing.T) {
+	c := &SqlCache{
+		Type: SQL_SQLITE3,
+	}
+	raw := "SELECT * FROM t1 WHERE a=? AND b=? AND c=?"
+	s := c.Sql(raw)
+	if s != raw {
+		t.Errorf("SqlCache.Sql expected original SQL. Returned: %s", s)
 	}
 }
 

@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	SQL_MYSQL = iota
-	SQL_PSQL  = iota
+	SQL_MYSQL   = iota
+	SQL_SQLITE3 = iota
+	SQL_PSQL    = iota
 )
 
 func NewSqlCache(db *sql.DB, t int) *SqlCache {
@@ -25,7 +26,7 @@ type SqlCache struct {
 }
 
 func (c *SqlCache) Sql(s string) string {
-	if c.Type == SQL_MYSQL {
+	if c.Type != SQL_PSQL {
 		return s
 	}
 	so := ""

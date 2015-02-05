@@ -36,8 +36,13 @@ func init() {
 	flag.Parse()
 
 	// set dbtype according to driver name
-	if *dbdriver == "postgres" {
+	switch *dbdriver {
+	case "postgres":
 		dbtype = cachedfetcher.SQL_PSQL
+	case "sqlite3":
+		dbtype = cachedfetcher.SQL_SQLITE3
+	default:
+		dbtype = cachedfetcher.SQL_MYSQL
 	}
 
 }
