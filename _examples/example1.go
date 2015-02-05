@@ -13,8 +13,7 @@ func example1(host string, db *sql.DB,
 	log.Print("# Fetch a URL and retrieve from cache")
 
 	url := host + "/example/1"
-	c := cachedfetcher.NewSqlCache(db)
-	c.Type = dbtype
+	c := cachedfetcher.NewSqlCache(db, dbtype)
 	f := cachedfetcher.New(c)
 	now := time.Now()
 	ctx := cachedfetcher.Context{

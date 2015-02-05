@@ -12,9 +12,10 @@ const (
 	SQL_PSQL  = iota
 )
 
-func NewSqlCache(db *sql.DB) *SqlCache {
+func NewSqlCache(db *sql.DB, t int) *SqlCache {
 	return &SqlCache{
-		DB: db,
+		DB:   db,
+		Type: t,
 	}
 }
 

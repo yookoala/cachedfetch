@@ -15,8 +15,7 @@ func example3(host string, db *sql.DB,
 	log.Print("# Get old cache. Sorted by Context Time ascendingly")
 
 	url := host + "/example/3"
-	c := cachedfetcher.NewSqlCache(db)
-	c.Type = dbtype
+	c := cachedfetcher.NewSqlCache(db, dbtype)
 	f := cachedfetcher.New(c)
 
 	// render context time

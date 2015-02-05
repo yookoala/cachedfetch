@@ -15,8 +15,7 @@ func example4(host string, db *sql.DB,
 	log.Print("# Get old cache by context string")
 
 	url := host + "/example/4"
-	c := cachedfetcher.NewSqlCache(db)
-	c.Type = dbtype
+	c := cachedfetcher.NewSqlCache(db, dbtype)
 	f := cachedfetcher.New(c)
 
 	// render context time
