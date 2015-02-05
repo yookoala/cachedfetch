@@ -2,12 +2,13 @@ package main
 
 import (
 	"database/sql"
+	"github.com/yookoala/buflog"
 	"github.com/yookoala/cachedfetcher"
-	"log"
 	"time"
 )
 
-func example1(host string, db *sql.DB) (resp *cachedfetcher.Response, err error) {
+func example1(host string, db *sql.DB,
+	log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
 
 	log.Print("# Fetch a URL and retrieve from cache")
 

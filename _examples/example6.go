@@ -3,13 +3,14 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/yookoala/buflog"
 	"github.com/yookoala/cachedfetcher"
-	"log"
 	"time"
 )
 
 // gets all cached result and display
-func example6(host string, db *sql.DB) (resp *cachedfetcher.Response, err error) {
+func example6(host string, db *sql.DB,
+	log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
 
 	log.Print("# Get caches while limiting the number of records")
 

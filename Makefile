@@ -57,6 +57,7 @@ _examples/run-all: \
 	_gopath/src/github.com/mattn/go-sqlite3 \
 	_gopath/src/github.com/lib/pq \
 	_gopath/src/github.com/go-sql-driver/mysql \
+	_gopath/src/github.com/yookoala/buflog \
 	cachedfetcher
 	@echo "Build Example(s) runner"
 	@echo "-----------------------"
@@ -74,6 +75,12 @@ cachedfetcher: _gopath/src/github.com/yookoala/cachedfetcher
 	@echo "-------------------"
 	rm -Rf _gopath/pkg/*/github.com/yookoala
 	go install github.com/yookoala/cachedfetcher
+	@echo
+
+_gopath/src/github.com/yookoala/buflog:
+	@echo "Install buflog"
+	@echo "--------------"
+	go get -u github.com/yookoala/buflog
 	@echo
 
 _gopath/src/github.com/yookoala/cachedfetcher:
