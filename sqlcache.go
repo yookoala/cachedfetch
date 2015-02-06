@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -14,15 +15,21 @@ const (
 )
 
 func NewSqlCache(db *sql.DB, t int) *SqlCache {
+	mt := MUTEX_ASYNC
+	if t == SQL_SQLITE3 {
+		mt = MUTEX_SYNC
+	}
 	return &SqlCache{
 		DB:   db,
 		Type: t,
+		M:    NewMutex(mt),
 	}
 }
 
 type SqlCache struct {
 	DB   *sql.DB
 	Type int
+	M    sync.Locker
 }
 
 func (c *SqlCache) Sql(s string) string {
@@ -48,6 +55,12 @@ func (c *SqlCache) Prepare(s string) (stmt *sql.Stmt, err error) {
 }
 
 func (c *SqlCache) Add(url string, ctx Context, r *Response) (err error) {
+
+	// sync database call sequence, if necessary
+	c.M.Lock()
+	defer c.M.Unlock()
+
+	// prepare and execute the insert call
 	stmt, err := c.Prepare("INSERT INTO cachedfetch_cache " +
 		"(url, context_str, context_time, fetched_time, " +
 		"status, status_code, proto, content_length, " +
@@ -56,6 +69,7 @@ func (c *SqlCache) Add(url string, ctx Context, r *Response) (err error) {
 	if err != nil {
 		return
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(
 		r.URL,
@@ -229,12 +243,17 @@ func (q *SqlCacheQuery) genGetSql() (sql string, args []interface{}) {
 
 func (q *SqlCacheQuery) GetAll() (resps ResponseColl, err error) {
 
+	// sync database call sequence, if necessary
+	q.Cache.M.Lock()
+	defer q.Cache.M.Unlock()
+
 	// query
 	sql, args := q.genGetSql()
 	stmt, err := q.Cache.Prepare(sql)
 	if err != nil {
 		return
 	}
+	defer stmt.Close()
 	rows, err := stmt.Query(args...)
 	if err != nil {
 		return

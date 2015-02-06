@@ -16,7 +16,7 @@ import (
 var dbdriver, dbsrc *string
 var dbtype int
 
-type example func(host string, db *sql.DB,
+type example func(host string, c cachedfetcher.Cache,
 	log *buflog.Logger) (resp *cachedfetcher.Response, err error)
 
 var examples = map[string]example{
@@ -67,6 +67,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// create cache
+	c := cachedfetcher.NewSqlCache(db, dbtype)
+
 	// initialize wait group
 	wg := &sync.WaitGroup{}
 	ch := make(chan *buflog.Logger)
@@ -80,14 +83,14 @@ func main() {
 			defer wg.Done()
 			lr := buflog.New()
 			lr.Printf("#### %s ####", name)
-			resp, err := exp(ts.URL, db, lr)
+			resp, err := exp(ts.URL, c, lr)
 			if err != nil {
 				lr.Printf("** %s: error", name)
 				if resp != nil {
 					lr.Printf("Response Size: %d", resp.ContentLength)
 					lr.Printf("Response Body: %s", resp.Body)
 				}
-				lr.Fatalf("Error Message: %s", err)
+				lr.Fatalf("Error: %#v", err)
 			}
 			log.Printf("** %s end", name)
 			ch <- lr
