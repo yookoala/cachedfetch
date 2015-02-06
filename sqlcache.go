@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	SQL_MYSQL   = iota
-	SQL_SQLITE3 = iota
-	SQL_PSQL    = iota
+	SQL_MYSQL = iota
+	SQL_SQLITE3
+	SQL_PSQL
 )
 
 func NewSqlCache(driver string, db *sql.DB) *SqlCache {
