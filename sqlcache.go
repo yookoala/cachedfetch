@@ -19,27 +19,27 @@ func NewSqlCache(driver string, db *sql.DB) *SqlCache {
 	// determine SQL type
 	// and sync type
 	t := SQL_MYSQL
-	mt := MUTEX_ASYNC
+	lt := LOCKER_ASYNC
 
 	switch driver {
 	case "postgres":
 		t = SQL_PSQL
 	case "sqlite3":
 		t = SQL_SQLITE3
-		mt = MUTEX_SYNC
+		lt = LOCKER_SYNC
 	}
 
 	return &SqlCache{
 		DB:   db,
 		Type: t,
-		M:    NewMutex(mt),
+		L:    NewLocker(lt),
 	}
 }
 
 type SqlCache struct {
 	DB   *sql.DB
 	Type int
-	M    sync.Locker
+	L    sync.Locker
 }
 
 func (c *SqlCache) Sql(s string) string {
@@ -67,8 +67,8 @@ func (c *SqlCache) Prepare(s string) (stmt *sql.Stmt, err error) {
 func (c *SqlCache) Add(url string, ctx Context, r *Response) (err error) {
 
 	// sync database call sequence, if necessary
-	c.M.Lock()
-	defer c.M.Unlock()
+	c.L.Lock()
+	defer c.L.Unlock()
 
 	// prepare and execute the insert call
 	stmt, err := c.Prepare("INSERT INTO cachedfetch_cache " +
@@ -254,8 +254,8 @@ func (q *SqlCacheQuery) genGetSql() (sql string, args []interface{}) {
 func (q *SqlCacheQuery) GetAll() (resps ResponseColl, err error) {
 
 	// sync database call sequence, if necessary
-	q.Cache.M.Lock()
-	defer q.Cache.M.Unlock()
+	q.Cache.L.Lock()
+	defer q.Cache.L.Unlock()
 
 	// query
 	sql, args := q.genGetSql()
