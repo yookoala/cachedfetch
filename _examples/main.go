@@ -14,7 +14,6 @@ import (
 )
 
 var dbdriver, dbsrc *string
-var dbtype int
 
 type example func(host string, c cachedfetcher.Cache,
 	log *buflog.Logger) (resp *cachedfetcher.Response, err error)
@@ -34,16 +33,6 @@ func init() {
 	dbdriver = flag.String("driver", "sqlite3", "Database driver")
 	dbsrc = flag.String("db", "file:./cache.db", "Database source")
 	flag.Parse()
-
-	// set dbtype according to driver name
-	switch *dbdriver {
-	case "postgres":
-		dbtype = cachedfetcher.SQL_PSQL
-	case "sqlite3":
-		dbtype = cachedfetcher.SQL_SQLITE3
-	default:
-		dbtype = cachedfetcher.SQL_MYSQL
-	}
 
 }
 
@@ -68,7 +57,7 @@ func main() {
 	}
 
 	// create cache
-	c := cachedfetcher.NewSqlCache(db, dbtype)
+	c := cachedfetcher.NewSqlCache(*dbdriver, db)
 
 	// initialize wait group
 	wg := &sync.WaitGroup{}

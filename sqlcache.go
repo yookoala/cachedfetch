@@ -14,11 +14,21 @@ const (
 	SQL_PSQL    = iota
 )
 
-func NewSqlCache(db *sql.DB, t int) *SqlCache {
+func NewSqlCache(driver string, db *sql.DB) *SqlCache {
+
+	// determine SQL type
+	// and sync type
+	t := SQL_MYSQL
 	mt := MUTEX_ASYNC
-	if t == SQL_SQLITE3 {
+
+	switch driver {
+	case "postgres":
+		t = SQL_PSQL
+	case "sqlite3":
+		t = SQL_SQLITE3
 		mt = MUTEX_SYNC
 	}
+
 	return &SqlCache{
 		DB:   db,
 		Type: t,
