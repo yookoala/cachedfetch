@@ -4,18 +4,18 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/yookoala/buflog"
-	"github.com/yookoala/cachedfetcher"
+	"github.com/yookoala/crawler"
 	"time"
 )
 
 // gets all cached result and display
-func example4(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
+func example4(host string, db *sql.DB, log *buflog.Logger) (resp *crawler.Response, err error) {
 
 	log.Print("# Get old cache by context string")
 
 	url := host + "/example/4"
-	c := cachedfetcher.NewSqlCache(*dbdriver, db)
-	f := cachedfetcher.NewFetcher(c)
+	c := crawler.NewSqlCache(*dbdriver, db)
+	f := crawler.NewFetcher(c)
 
 	// render context time
 	d, err := time.ParseDuration("24h")
@@ -29,7 +29,7 @@ func example4(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 	l := 10
 
 	for i := 1; i <= l; i++ {
-		ctx := cachedfetcher.Context{
+		ctx := crawler.Context{
 			Str:  "example/4",
 			Time: t,
 		}
@@ -47,7 +47,7 @@ func example4(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 	}
 
 	// load response into response slice
-	resps := make([]cachedfetcher.Response, 0)
+	resps := make([]crawler.Response, 0)
 	for rs.Next() {
 		resp, err := rs.Get()
 		if err != nil {

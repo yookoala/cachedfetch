@@ -3,19 +3,19 @@ package main
 import (
 	"database/sql"
 	"github.com/yookoala/buflog"
-	"github.com/yookoala/cachedfetcher"
+	"github.com/yookoala/crawler"
 	"time"
 )
 
-func example1(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
+func example1(host string, db *sql.DB, log *buflog.Logger) (resp *crawler.Response, err error) {
 
 	log.Print("# Fetch a URL and retrieve from cache")
 
 	url := host + "/example/1"
-	c := cachedfetcher.NewSqlCache(*dbdriver, db)
-	f := cachedfetcher.NewFetcher(c)
+	c := crawler.NewSqlCache(*dbdriver, db)
+	f := crawler.NewFetcher(c)
 	now := time.Now()
-	ctx := cachedfetcher.Context{
+	ctx := crawler.Context{
 		Str:  "example/1",
 		Time: now,
 	}
@@ -43,7 +43,7 @@ func example1(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 	log.Printf("Body:   \"%s\"", string(resp.Body))
 
 	// load response into response slice
-	resps := make([]cachedfetcher.Response, 0)
+	resps := make([]crawler.Response, 0)
 	for rs.Next() {
 		resp, err := rs.Get()
 		if err != nil {

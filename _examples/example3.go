@@ -4,18 +4,18 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/yookoala/buflog"
-	"github.com/yookoala/cachedfetcher"
+	"github.com/yookoala/crawler"
 	"time"
 )
 
 // gets all cached result and display
-func example3(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
+func example3(host string, db *sql.DB, log *buflog.Logger) (resp *crawler.Response, err error) {
 
 	log.Print("# Get old cache. Sorted by Context Time ascendingly")
 
 	url := host + "/example/3"
-	c := cachedfetcher.NewSqlCache(*dbdriver, db)
-	f := cachedfetcher.NewFetcher(c)
+	c := crawler.NewSqlCache(*dbdriver, db)
+	f := crawler.NewFetcher(c)
 
 	// render context time
 	d, err := time.ParseDuration("24h")
@@ -29,7 +29,7 @@ func example3(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 	l := 10
 
 	for i := 0; i < l; i++ {
-		ctx := cachedfetcher.Context{
+		ctx := crawler.Context{
 			Str:  "example/3",
 			Time: t,
 		}
@@ -43,15 +43,15 @@ func example3(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 	// search the existing url
 	rs, err := c.
 		Find(url).
-		SortBy(cachedfetcher.OrderContextTime).
-		SortBy(cachedfetcher.OrderFetchedTimeDesc).
+		SortBy(crawler.OrderContextTime).
+		SortBy(crawler.OrderFetchedTimeDesc).
 		GetAll()
 	if err != nil {
 		return
 	}
 
 	// load response into response slice
-	resps := make([]cachedfetcher.Response, 0)
+	resps := make([]crawler.Response, 0)
 	for rs.Next() {
 		resp, err := rs.Get()
 		if err != nil {
@@ -61,7 +61,7 @@ func example3(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 	}
 
 	// get cached items and display
-	var prev cachedfetcher.Response
+	var prev crawler.Response
 	for i, curr := range resps {
 		log.Printf("[#%d] (%s) Body: \"%s\"", i,
 			curr.ContextTime.Format("2006-01-02"),

@@ -4,18 +4,18 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/yookoala/buflog"
-	"github.com/yookoala/cachedfetcher"
+	"github.com/yookoala/crawler"
 	"time"
 )
 
 // gets all cached result and display
-func example6(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
+func example6(host string, db *sql.DB, log *buflog.Logger) (resp *crawler.Response, err error) {
 
 	log.Print("# Get caches while limiting the number of records")
 
 	url := host + "/example/6"
-	c := cachedfetcher.NewSqlCache(*dbdriver, db)
-	f := cachedfetcher.NewFetcher(c)
+	c := crawler.NewSqlCache(*dbdriver, db)
+	f := crawler.NewFetcher(c)
 
 	// render context time
 	d, err := time.ParseDuration("24h")
@@ -32,7 +32,7 @@ func example6(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 	l2 := 5  // limit in retriving response
 
 	for i := 0; i < l1; i++ {
-		ctx := cachedfetcher.Context{
+		ctx := crawler.Context{
 			Str:  "example/6",
 			Time: t,
 		}
@@ -53,7 +53,7 @@ func example6(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 	}
 
 	// load response into response slice
-	resps := make([]cachedfetcher.Response, 0)
+	resps := make([]crawler.Response, 0)
 	for rs.Next() {
 		resp, err := rs.Get()
 		if err != nil {

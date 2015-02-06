@@ -1,4 +1,4 @@
-package cachedfetcher
+package crawler
 
 import (
 	"database/sql"

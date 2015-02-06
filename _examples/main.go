@@ -7,7 +7,7 @@ import (
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yookoala/buflog"
-	"github.com/yookoala/cachedfetcher"
+	"github.com/yookoala/crawler"
 	"log"
 	"net/http/httptest"
 	"sync"
@@ -16,7 +16,7 @@ import (
 var dbdriver, dbsrc *string
 
 type example func(host string, db *sql.DB,
-	log *buflog.Logger) (resp *cachedfetcher.Response, err error)
+	log *buflog.Logger) (resp *crawler.Response, err error)
 
 func init() {
 	// read flags

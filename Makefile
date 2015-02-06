@@ -19,7 +19,7 @@ test.main:
 
 test.example.sqlite3: \
 	_test.database \
-	cachedfetcher \
+	crawler \
 	_examples/run-all
 	@echo "Run Examples on Sqlite3"
 	@echo "-----------------------"
@@ -27,7 +27,7 @@ test.example.sqlite3: \
 	@echo
 
 test.example.psql: \
-	cachedfetcher \
+	crawler \
 	_examples/run-all
 	@echo "Run Examples on PostgreSQL"
 	@echo "--------------------------"
@@ -35,7 +35,7 @@ test.example.psql: \
 	@echo
 
 test.example.mysql: \
-	cachedfetcher \
+	crawler \
 	_examples/run-all
 	@echo "Run Examples on MySQL / MariaDB"
 	@echo "-------------------------------"
@@ -58,7 +58,7 @@ _examples/run-all: \
 	_gopath/src/github.com/lib/pq \
 	_gopath/src/github.com/go-sql-driver/mysql \
 	_gopath/src/github.com/yookoala/buflog \
-	cachedfetcher
+	crawler
 	@echo "Build Example(s) runner"
 	@echo "-----------------------"
 	cd _examples && go build -o ${EXAMPLE}/run-all
@@ -70,11 +70,11 @@ _gopath/src:
 	mkdir -p _gopath/src
 	@echo
 
-cachedfetcher: _gopath/src/github.com/yookoala/cachedfetcher
-	@echo "Install cachedfetcher"
+crawler: _gopath/src/github.com/yookoala/crawler
+	@echo "Install crawler"
 	@echo "-------------------"
 	rm -Rf _gopath/pkg/*/github.com/yookoala
-	go install github.com/yookoala/cachedfetcher
+	go install github.com/yookoala/crawler
 	@echo
 
 _gopath/src/github.com/yookoala/buflog:
@@ -83,9 +83,9 @@ _gopath/src/github.com/yookoala/buflog:
 	go get -u github.com/yookoala/buflog
 	@echo
 
-_gopath/src/github.com/yookoala/cachedfetcher:
+_gopath/src/github.com/yookoala/crawler:
 	@mkdir -p _gopath/src/github.com/yookoala
-	@cd _gopath/src/github.com/yookoala && ln -s ../../../../. cachedfetcher
+	@cd _gopath/src/github.com/yookoala && ln -s ../../../../. crawler
 
 _gopath/src/github.com/mattn/go-sqlite3:
 	@echo "Install go-sqlite3"
@@ -113,4 +113,4 @@ _test.database:
 	@echo
 
 .PHONY: test test.main test.example.sqlite3 test.example.mysql
-.PHONY: _test.database cachedfetcher clean
+.PHONY: _test.database crawler clean

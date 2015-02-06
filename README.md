@@ -1,5 +1,5 @@
-cachedfetch
-===========
+crawler
+=======
 
 A library to fetch and cache HTTP results.
 
@@ -15,10 +15,10 @@ The default cache uses sql database. You may extend by implementing the `Cacher`
 Licence
 -------
 
-This file is part of cachedfetch.
+This file is part of crawler.
 
-cachedfetch is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+crawler is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-cachedfetch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public Licensefor more details.
+crawler is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public Licensefor more details.
 
-You should have received a copy of the GNU Lesser General Public License along with cachedfetch. If not, see http://www.gnu.org/licenses/lgpl.html.
+You should have received a copy of the GNU Lesser General Public License along with crawler. If not, see http://www.gnu.org/licenses/lgpl.html.

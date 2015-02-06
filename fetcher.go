@@ -1,4 +1,4 @@
-package cachedfetcher
+package crawler
 
 import (
 	"net/http"
@@ -25,7 +25,7 @@ func (f *Fetcher) Get(url string, ctx Context) (r *Response, err error) {
 		return
 	}
 
-	// render cachedfetcher response
+	// render crawler response
 	r = &Response{
 		URL:         url,
 		ContextStr:  ctx.Str,
