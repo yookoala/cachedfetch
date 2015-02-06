@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -29,17 +28,19 @@ func NewSqlCache(driver string, db *sql.DB) *SqlCache {
 		lt = LOCKER_SYNC
 	}
 
+	// add locker to global lockers map
+	lockers[db] = NewLocker(lt)
+
+	// create the cache struct
 	return &SqlCache{
 		DB:   db,
 		Type: t,
-		L:    NewLocker(lt),
 	}
 }
 
 type SqlCache struct {
 	DB   *sql.DB
 	Type int
-	L    sync.Locker
 }
 
 func (c *SqlCache) Sql(s string) string {
@@ -64,11 +65,19 @@ func (c *SqlCache) Prepare(s string) (stmt *sql.Stmt, err error) {
 	return
 }
 
+func (c *SqlCache) Lock() {
+	lockers[c.DB].Lock()
+}
+
+func (c *SqlCache) Unlock() {
+	lockers[c.DB].Unlock()
+}
+
 func (c *SqlCache) Add(url string, ctx Context, r *Response) (err error) {
 
 	// sync database call sequence, if necessary
-	c.L.Lock()
-	defer c.L.Unlock()
+	c.Lock()
+	defer c.Unlock()
 
 	// prepare and execute the insert call
 	stmt, err := c.Prepare("INSERT INTO cachedfetch_cache " +
@@ -254,8 +263,8 @@ func (q *SqlCacheQuery) genGetSql() (sql string, args []interface{}) {
 func (q *SqlCacheQuery) GetAll() (resps ResponseColl, err error) {
 
 	// sync database call sequence, if necessary
-	q.Cache.L.Lock()
-	defer q.Cache.L.Unlock()
+	q.Cache.Lock()
+	defer q.Cache.Unlock()
 
 	// query
 	sql, args := q.genGetSql()

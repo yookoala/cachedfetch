@@ -15,7 +15,7 @@ import (
 
 var dbdriver, dbsrc *string
 
-type example func(host string, c cachedfetcher.Cache,
+type example func(host string, db *sql.DB,
 	log *buflog.Logger) (resp *cachedfetcher.Response, err error)
 
 func init() {
@@ -26,7 +26,7 @@ func init() {
 }
 
 // run all example concurrently
-func run(examples map[string]example, url string, c cachedfetcher.Cache) {
+func run(examples map[string]example, url string, db *sql.DB) {
 	// initialize wait group
 	wg := &sync.WaitGroup{}
 	ch := make(chan *buflog.Logger)
@@ -40,7 +40,7 @@ func run(examples map[string]example, url string, c cachedfetcher.Cache) {
 			defer wg.Done()
 			lr := buflog.New()
 			lr.Printf("#### %s ####", name)
-			resp, err := exp(url, c, lr)
+			resp, err := exp(url, db, lr)
 			if err != nil {
 				lr.Printf("** %s: error", name)
 				if resp != nil {
@@ -92,12 +92,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// create cache for all examples
-	//
-	// Note: It is recommended to use single Cache instance
-	// You may share it with multiple goroutine.
-	c := cachedfetcher.NewSqlCache(*dbdriver, db)
-
 	// run the examples in goroutines
 	var examples = map[string]example{
 		"example1": example1,
@@ -107,6 +101,6 @@ func main() {
 		"example5": example5,
 		"example6": example6,
 	}
-	run(examples, ts.URL, c)
+	run(examples, ts.URL, db)
 
 }

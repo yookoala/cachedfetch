@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/yookoala/buflog"
 	"github.com/yookoala/cachedfetcher"
@@ -8,12 +9,12 @@ import (
 )
 
 // gets all cached result and display
-func example2(host string, c cachedfetcher.Cache,
-	log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
+func example2(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
 
 	log.Print("# Get old cache with default sort order")
 
 	url := host + "/example/2"
+	c := cachedfetcher.NewSqlCache(*dbdriver, db)
 	f := cachedfetcher.New(c)
 
 	// render context time

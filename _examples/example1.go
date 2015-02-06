@@ -1,17 +1,18 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/yookoala/buflog"
 	"github.com/yookoala/cachedfetcher"
 	"time"
 )
 
-func example1(host string, c cachedfetcher.Cache,
-	log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
+func example1(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.Response, err error) {
 
 	log.Print("# Fetch a URL and retrieve from cache")
 
 	url := host + "/example/1"
+	c := cachedfetcher.NewSqlCache(*dbdriver, db)
 	f := cachedfetcher.New(c)
 	now := time.Now()
 	ctx := cachedfetcher.Context{
