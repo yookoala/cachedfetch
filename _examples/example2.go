@@ -15,7 +15,7 @@ func example2(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 
 	url := host + "/example/2"
 	c := cachedfetcher.NewSqlCache(*dbdriver, db)
-	f := cachedfetcher.New(c)
+	f := cachedfetcher.NewFetcher(c)
 
 	// render context time
 	d, err := time.ParseDuration("24h")

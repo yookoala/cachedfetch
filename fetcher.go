@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func New(c Cache) *Fetcher {
+func NewFetcher(c Cache) *Fetcher {
 	return &Fetcher{
 		Cache: c,
 	}

@@ -13,7 +13,7 @@ func example1(host string, db *sql.DB, log *buflog.Logger) (resp *cachedfetcher.
 
 	url := host + "/example/1"
 	c := cachedfetcher.NewSqlCache(*dbdriver, db)
-	f := cachedfetcher.New(c)
+	f := cachedfetcher.NewFetcher(c)
 	now := time.Now()
 	ctx := cachedfetcher.Context{
 		Str:  "example/1",
