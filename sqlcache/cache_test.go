@@ -1,9 +1,9 @@
 package sqlcache
 
 import (
+	"github.com/yookoala/crawler"
 	"testing"
 	"time"
-	"github.com/yookoala/crawler"
 )
 
 func TestCache(t *testing.T) {
