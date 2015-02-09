@@ -12,6 +12,14 @@ const (
 )
 
 type Cache interface {
+
+	// initialize table / storage (if it is not already initialized)
+	Init() (err error)
+
+	// rebuild table / storage (will clear all old data)
+	Rebuild() (err error)
+
+	// store a url response in context
 	Add(url string, ctx Context, r *Response) (err error)
 
 	// find cached response with URL field

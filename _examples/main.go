@@ -8,6 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/yookoala/buflog"
 	"github.com/yookoala/crawler"
+	"github.com/yookoala/crawler/sqlcache"
 	"log"
 	"net/http/httptest"
 	"sync"
@@ -17,6 +18,12 @@ var dbdriver, dbsrc *string
 
 type example func(host string, db *sql.DB,
 	log *buflog.Logger) (resp *crawler.Response, err error)
+
+func must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
 
 func init() {
 	// read flags
@@ -91,6 +98,10 @@ func main() {
 		log.Printf("Unable to connect to database")
 		log.Fatal(err)
 	}
+
+	// initialize cache storage
+	must(sqlcache.New(*dbdriver, db).Rebuild())
+	log.Printf("Rebuilt cache database")
 
 	// run the examples in goroutines
 	var examples = map[string]example{

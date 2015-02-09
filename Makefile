@@ -10,7 +10,7 @@ all: fmt test
 
 test: test.main test.example.sqlite3
 
-test.main:
+test.main: crawler
 	@echo "Main Tests"
 	@echo "----------"
 	go version
@@ -19,7 +19,6 @@ test.main:
 	@echo
 
 test.example.sqlite3: \
-	_test.database \
 	crawler \
 	_examples/run-all
 	@echo "Run Examples on Sqlite3"
@@ -47,6 +46,7 @@ fmt:
 	@echo "Format the source files"
 	@echo "-----------------------"
 	go fmt
+	cd sqlcache && go fmt
 	cd _examples && go fmt
 	@echo
 
@@ -107,11 +107,5 @@ _gopath/src/github.com/go-sql-driver/mysql:
 	go get -u github.com/go-sql-driver/mysql
 	@echo
 
-_test.database:
-	@echo "Create Example Database"
-	@echo "-----------------------"
-	cat _data/setup_sqlite3.sql | sqlite3 _data/test.sqlite3.db
-	@echo
-
 .PHONY: test test.main test.example.sqlite3 test.example.mysql
-.PHONY: _test.database crawler clean
+.PHONY: crawler clean
