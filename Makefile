@@ -15,6 +15,7 @@ test.main:
 	@echo "----------"
 	go version
 	go test
+	cd sqlcache; go test
 	@echo
 
 test.example.sqlite3: \

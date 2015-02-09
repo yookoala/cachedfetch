@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/yookoala/buflog"
 	"github.com/yookoala/crawler"
+	"github.com/yookoala/crawler/sqlcache"
 	"time"
 )
 
@@ -14,7 +15,7 @@ func example2(host string, db *sql.DB, log *buflog.Logger) (resp *crawler.Respon
 	log.Print("# Get old cache with default sort order")
 
 	url := host + "/example/2"
-	c := crawler.NewSqlCache(*dbdriver, db)
+	c := sqlcache.New(*dbdriver, db)
 	f := crawler.NewFetcher(c)
 
 	// render context time

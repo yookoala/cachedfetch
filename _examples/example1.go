@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/yookoala/buflog"
 	"github.com/yookoala/crawler"
+	"github.com/yookoala/crawler/sqlcache"
 	"time"
 )
 
@@ -12,7 +13,7 @@ func example1(host string, db *sql.DB, log *buflog.Logger) (resp *crawler.Respon
 	log.Print("# Fetch a URL and retrieve from cache")
 
 	url := host + "/example/1"
-	c := crawler.NewSqlCache(*dbdriver, db)
+	c := sqlcache.New(*dbdriver, db)
 	f := crawler.NewFetcher(c)
 	now := time.Now()
 	ctx := crawler.Context{

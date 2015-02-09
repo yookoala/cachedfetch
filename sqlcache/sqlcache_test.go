@@ -1,71 +1,72 @@
-package crawler
+package sqlcache
 
 import (
 	"testing"
 	"time"
+	"github.com/yookoala/crawler"
 )
 
-func TestSqlCache(t *testing.T) {
-	var c Cache = &SqlCache{}
-	t.Log("SqlCache implements Cache: %#v", c)
+func TestCache(t *testing.T) {
+	var c crawler.Cache = &Cache{}
+	t.Log("Cache implements Cache: %#v", c)
 }
 
-func TestSqlCacheSqlDefault(t *testing.T) {
-	c := &SqlCache{}
+func TestCacheDefault(t *testing.T) {
+	c := &Cache{}
 	if c.Type != SQL_MYSQL {
 		t.Errorf("Default CacheQuery.Type should be SQL_MYSQL")
 	}
 }
 
-func TestSqlCacheSqlMySQL(t *testing.T) {
-	c := &SqlCache{
+func TestCacheMySQL(t *testing.T) {
+	c := &Cache{
 		Type: SQL_MYSQL,
 	}
 	raw := "SELECT * FROM t1 WHERE a=? AND b=? AND c=?"
 	s := c.Sql(raw)
 	if s != raw {
-		t.Errorf("SqlCache.Sql expected original SQL. Returned: %s", s)
+		t.Errorf("Cache.Sql expected original SQL. Returned: %s", s)
 	}
 }
 
-func TestSqlCacheSqlSqlite3(t *testing.T) {
-	c := &SqlCache{
+func TestCacheSqlite3(t *testing.T) {
+	c := &Cache{
 		Type: SQL_SQLITE3,
 	}
 	raw := "SELECT * FROM t1 WHERE a=? AND b=? AND c=?"
 	s := c.Sql(raw)
 	if s != raw {
-		t.Errorf("SqlCache.Sql expected original SQL. Returned: %s", s)
+		t.Errorf("Cache.Sql expected original SQL. Returned: %s", s)
 	}
 }
 
-func TestSqlCacheSqlPSQL(t *testing.T) {
-	c := &SqlCache{
+func TestCachePSQL(t *testing.T) {
+	c := &Cache{
 		Type: SQL_PSQL,
 	}
 	raw := "SELECT * FROM t1 WHERE a=? AND b=? AND c=?"
 	expected := "SELECT * FROM t1 WHERE a=$1 AND b=$2 AND c=$3"
 	s := c.Sql(raw)
 	if s != expected {
-		t.Errorf("SqlCache.Sql did not format SQL into PSQL "+
+		t.Errorf("Cache.Sql did not format SQL into PSQL "+
 			"position parameter. Returned: %s", s)
 	}
 }
 
-func TestSqlCacheQuery(t *testing.T) {
-	var c CacheQuery = &SqlCacheQuery{}
-	t.Log("SqlCacheQuery implements CacheQuery: %#v", c)
+func TestCacheQuery(t *testing.T) {
+	var c crawler.CacheQuery = &CacheQuery{}
+	t.Log("CacheQuery implements CacheQuery: %#v", c)
 }
 
-func TestSqlCacheQueryWhere(t *testing.T) {
+func TestCacheQueryWhere(t *testing.T) {
 	t1 := time.Now()
 	t2 := t1.AddDate(0, 0, 1) // add 1 day to t1
-	Ctx := Context{
+	Ctx := crawler.Context{
 		Str:     "context 1",
 		Time:    t1,
 		Fetched: t2,
 	}
-	var q = &SqlCacheQuery{
+	var q = &CacheQuery{
 		URL:     "test url",
 		Context: Ctx,
 	}
@@ -114,11 +115,11 @@ func TestSqlCacheQueryWhere(t *testing.T) {
 	}
 }
 
-func TestSqlCacheQueryOrder(t *testing.T) {
-	var q = &SqlCacheQuery{
+func TestCacheQueryOrder(t *testing.T) {
+	var q = &CacheQuery{
 		Order: []int{
-			OrderContextTime,
-			OrderFetchedTimeDesc,
+			crawler.OrderContextTime,
+			crawler.OrderFetchedTimeDesc,
 		},
 	}
 	sql := q.sqlOrder()
@@ -131,8 +132,8 @@ func TestSqlCacheQueryOrder(t *testing.T) {
 	}
 }
 
-func TestSqlCacheQueryLimit(t *testing.T) {
-	var q = &SqlCacheQuery{
+func TestCacheQueryLimit(t *testing.T) {
+	var q = &CacheQuery{
 		L: 1123,
 	}
 	sql := q.sqlLimit()
@@ -145,8 +146,8 @@ func TestSqlCacheQueryLimit(t *testing.T) {
 	}
 }
 
-func TestSqlCacheQueryLimit0(t *testing.T) {
-	var q = &SqlCacheQuery{}
+func TestCacheQueryLimit0(t *testing.T) {
+	var q = &CacheQuery{}
 	sql := q.sqlLimit()
 	sqlE := ""
 	if sql != sqlE {
@@ -157,32 +158,31 @@ func TestSqlCacheQueryLimit0(t *testing.T) {
 	}
 }
 
-func TestSqlResponseColl(t *testing.T) {
-	var rc ResponseColl
-	rc = &SqlResponseColl{}
-	t.Logf("SqlResponseColl implements ResponseColl: %#v", rc)
+func TestResponseColl(t *testing.T) {
+	var rc crawler.ResponseColl = &ResponseColl{}
+	t.Logf("ResponseColl implements ResponseColl: %#v", rc)
 }
 
-func TestSqlResponseCollRoutines(t *testing.T) {
-	rc := SqlResponseColl{
-		col: []Response{
-			Response{
+func TestResponseCollRoutines(t *testing.T) {
+	rc := ResponseColl{
+		col: []crawler.Response{
+			crawler.Response{
 				URL:        "Response 1",
 				StatusCode: 1,
 			},
-			Response{
+			crawler.Response{
 				URL:        "Response 2",
 				StatusCode: 2,
 			},
-			Response{
+			crawler.Response{
 				URL:        "Response 3",
 				StatusCode: 3,
 			},
-			Response{
+			crawler.Response{
 				URL:        "Response 4",
 				StatusCode: 4,
 			},
-			Response{
+			crawler.Response{
 				URL:        "Response 5",
 				StatusCode: 5,
 			},
