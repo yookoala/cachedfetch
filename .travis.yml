@@ -10,10 +10,7 @@ go:
 before_script:
   - mysql -u root -e 'create database `cachedfetcher`'
   - mysql -u root -e 'grant all on cachedfetcher.* to travis'
-  - mysql -u travis cachedfetcher < _data/setup_mysql.sql
   - psql -c 'create database cachedfetcher' -U postgres
-  - psql -U postgres cachedfetcher < _data/setup_psql.sql
-
 
 script:
   - make test
