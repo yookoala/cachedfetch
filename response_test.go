@@ -33,13 +33,13 @@ func TestResponse(t *testing.T) {
 	var r2 Response
 	r2 = *r1
 
-	if !r1.Equals(r2) {
+	if !r1.Equal(r2) {
 		t.Error("Response are not evaluated as the same")
 	}
 
 	r2.URL = "dummy url 1 changed"
-	if r1.Equals(r2) {
-		t.Error("r2 has changed and Response.Equals doesn't recgonize it")
+	if r1.Equal(r2) {
+		t.Error("r2 has changed and Response.Equal doesn't recgonize it")
 	}
 
 }

@@ -58,7 +58,7 @@ func example1(host string, db *sql.DB, log *buflog.Logger) (resp *crawler.Respon
 		log.Fatal("Could not find example 1 response in cache")
 	} else if len(resps) > 1 {
 		log.Fatal("More than 1 responses matches but expecting only 1")
-	} else if !resp.Equals(resps[0]) {
+	} else if !resp.Equal(resps[0]) {
 		log.Fatal("Response found in cache is different from the one stored previously")
 	}
 

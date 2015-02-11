@@ -30,7 +30,7 @@ type Response struct {
 	Body []byte
 }
 
-func (r *Response) Equals(r2 Response) bool {
+func (r *Response) Equal(r2 Response) bool {
 	return r.URL == r2.URL &&
 		r.ContextStr == r2.ContextStr &&
 		r.ContextTime.Unix() == r2.ContextTime.Unix() &&
