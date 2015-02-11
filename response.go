@@ -85,3 +85,23 @@ func (r *Response) ReadRaw(raw *http.Response) (err error) {
 	r.Body, err = ioutil.ReadAll(raw.Body)
 	return
 }
+
+func (r *Response) InContext(ctx *Context) bool {
+	return r.ContextStr == ctx.Str &&
+		r.ContextTime.Equal(ctx.Time) &&
+		r.FetchedTime.Equal(ctx.Fetched)
+}
+
+func (r *Response) SetContext(ctx *Context) {
+	r.ContextStr = ctx.Str
+	r.ContextTime = ctx.Time
+	r.FetchedTime = ctx.Fetched
+}
+
+func (r *Response) GetContext() (ctx *Context) {
+	return &Context{
+		Str:     r.ContextStr,
+		Time:    r.ContextTime,
+		Fetched: r.FetchedTime,
+	}
+}
