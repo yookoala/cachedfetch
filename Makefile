@@ -107,5 +107,24 @@ _gopath/src/github.com/go-sql-driver/mysql:
 	go get -u github.com/go-sql-driver/mysql
 	@echo
 
+
+tidy: lint
+
+lint: \
+	_gopath/src/github.com/golang/lint/golint
+	@echo "Run golint to the source"
+	@echo "------------------------"
+	_gopath/bin/golint
+	@echo
+
+_gopath/src/github.com/golang/lint/golint:
+	@echo "Install golint"
+	@echo "--------------"
+	go get -u github.com/golang/lint/golint
+	@echo
+
+
+
 .PHONY: test test.main test.example.sqlite3 test.example.mysql
 .PHONY: crawler clean
+.PHONY: tidy lint
